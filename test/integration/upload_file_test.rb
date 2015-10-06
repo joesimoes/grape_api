@@ -1,4 +1,6 @@
 require "test_helper"
+require "uploaders/asset_uploader"
+require "models/asset"
 require "app"
 
 describe "Upload a file" do
@@ -9,6 +11,7 @@ describe "Upload a file" do
 	end
 
 	before do
+		file_path = fixture_path "zip.zip"
 		post "/files", {
 			file: {
 				title: "Zip File",
@@ -18,11 +21,18 @@ describe "Upload a file" do
 	end
 
 	it "uploads a file" do
-		file_path = fixture_path "zip.zip"
 		last_response.status.must_equal 201
 	end
 
 	it "retrieves the content for the new file" do
 		last_response.body.must_include "Zip File"
+	end
+
+	it "retrieves the actual filename" do
+		last_response.body.must_include "zip.zip"
+	end
+
+	it "retrieves the full path of the file" do 
+		last_response.body.must_include "public/uploads/assets"
 	end
 end
